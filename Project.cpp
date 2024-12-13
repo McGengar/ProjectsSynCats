@@ -7,33 +7,47 @@ using namespace std;
 const int SCREEN_HEIGHT = 768;
 const int SCREEN_WIDTH = 1024;
 
-class DrawableObject {
+class DrawableObject{
 public:
-    void Draw();
     const char* texture_path;
+    int pos_x;
+    int pos_y;
+    sf::Texture texture;
+    sf::Sprite sprite;
 };
 
-class Cat : DrawableObject {
+class Cat : public DrawableObject {
 public:
     int number_of_states;
     int current_state;
     void OnUpdate();
 };
 
-class VarCat : Cat{
+class VarCat : public Cat{
 public:
     const char* texture_path = "resources/varcat_2.bmp";
-
+    VarCat() {
+        pos_x = 0;
+        pos_y = 0;
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(128, 128);
+    }
+    VarCat(int _pos_x, int _pos_y){
+        pos_x = _pos_x;
+        pos_y = _pos_y;
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(128, 128);
+    }
 };
 
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SynCats");
-    string message = "Hello World";
-    string display = "";
-    int index = 0;
-    //std::cout << "Hello World!\n";
 
     sf::Clock clock;
     sf::Time time;
@@ -46,6 +60,8 @@ int main()
     var_sprite.setPosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     var_sprite.setOrigin(128, 128);
     
+    VarCat cats[3] = { VarCat(100,100),VarCat(200,200),VarCat(300,300)};
+
 
     window.setKeyRepeatEnabled(false);
 
@@ -66,16 +82,17 @@ int main()
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
                 case sf::Keyboard::Return:
-                    display += message[index];
-                    index++;
-                    system("cls");
-                    cout << display;
                     break;
                 }
             }
             
         }
         window.draw(var_sprite);
+
+        for (int i = 0; i < 3;i++) {
+            window.draw(cats[i].sprite);
+        }
+        
         window.display();
         window.clear();
     }
