@@ -20,9 +20,10 @@ public:
     void OnUpdate();
 };
 
-class VarCat : Cat {
+class VarCat : Cat{
 public:
-    const char* texture_path = "resources/varcat_2";
+    const char* texture_path = "resources/varcat_2.bmp";
+
 };
 
 
@@ -38,6 +39,14 @@ int main()
     sf::Time time;
     float DeltaTime;
 
+    sf::Texture var_texture;
+    var_texture.loadFromFile("resources/varcat_2.bmp");
+    sf::Sprite var_sprite;
+    var_sprite.setTexture(var_texture);
+    var_sprite.setPosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+    var_sprite.setOrigin(128, 128);
+    
+
     window.setKeyRepeatEnabled(false);
 
     while (window.isOpen())
@@ -45,6 +54,7 @@ int main()
         sf::Event event;
         time = clock.getElapsedTime();
         DeltaTime = time.asSeconds();
+        var_sprite.setScale(sin(DeltaTime*4)*0.1 + 1, sin(DeltaTime*4) * 0.1 + 1);
         while(window.pollEvent(event)) 
         {
 
@@ -65,9 +75,9 @@ int main()
             }
             
         }
-        clock.restart();
-
+        window.draw(var_sprite);
         window.display();
+        window.clear();
     }
     
 }
