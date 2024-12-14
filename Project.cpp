@@ -16,31 +16,86 @@ public:
     sf::Sprite sprite;
 };
 
-class Cat : public DrawableObject {
+class Selector : public DrawableObject {
 public:
-    int number_of_states;
-    int current_state;
-    void OnUpdate();
-};
-
-class VarCat : public Cat{
-public:
-    const char* texture_path = "resources/varcat_2.bmp";
-    VarCat() {
-        pos_x = 0;
-        pos_y = 0;
+    int target = 0;
+    Selector() {
+        texture_path = "resources/selector.png";
+        pos_x = 100;
+        pos_y = 100;
         texture.loadFromFile(texture_path);
         sprite.setTexture(texture);
         sprite.setPosition(pos_x, pos_y);
         sprite.setOrigin(128, 128);
     }
-    VarCat(int _pos_x, int _pos_y){
-        pos_x = _pos_x;
-        pos_y = _pos_y;
-        texture.loadFromFile(texture_path);
+};
+
+class Cat : public DrawableObject {
+public:
+    int number_of_states;
+    int current_state;
+    const char* texture_path_state_0;
+    const char* texture_path_state_1;
+    const char* texture_path_state_2;
+    void OnUpdate();
+};
+
+class VarCat : public Cat{
+public:
+    VarCat() {
+        number_of_states = 3;
+        current_state = 0;
+        texture_path_state_0 = "resources/varcat_0.png";
+        texture_path_state_1 = "resources/varcat_1.png";
+        texture_path_state_2 = "resources/varcat_2.png";
+        pos_x = 0;
+        pos_y = 0;
+        texture.loadFromFile(texture_path_state_0);
         sprite.setTexture(texture);
         sprite.setPosition(pos_x, pos_y);
         sprite.setOrigin(128, 128);
+    }
+    VarCat(int _pos_x, int _pos_y, int _state){
+        number_of_states = 3;
+        current_state = _state;
+        texture_path_state_0 = "resources/varcat_0.png";
+        texture_path_state_1 = "resources/varcat_1.png";
+        texture_path_state_2 = "resources/varcat_2.png";
+        pos_x = _pos_x;
+        pos_y = _pos_y;
+        switch (current_state) {
+            case 0:
+                texture_path = texture_path_state_0;
+                break;
+            case 1:
+                texture_path = texture_path_state_1;
+                break;
+            case 2:
+                texture_path = texture_path_state_2;
+                break;
+        }
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(128, 128);    
+    }
+    void OnUpdate() {
+        if (current_state < 2) current_state++;
+        else current_state = 0;
+        switch (current_state) {
+        case 0:
+            texture_path = texture_path_state_0;
+            break;
+        case 1:
+            texture_path = texture_path_state_1;
+            break;
+        case 2:
+            texture_path = texture_path_state_2;
+            break;
+        }
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+
     }
 };
 
@@ -53,15 +108,10 @@ int main()
     sf::Time time;
     float DeltaTime;
 
-    sf::Texture var_texture;
-    var_texture.loadFromFile("resources/varcat_2.bmp");
-    sf::Sprite var_sprite;
-    var_sprite.setTexture(var_texture);
-    var_sprite.setPosition(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    var_sprite.setOrigin(128, 128);
-    
-    VarCat cats[3] = { VarCat(100,100),VarCat(200,200),VarCat(300,300)};
 
+    VarCat cats[] = { VarCat(300,150,0),VarCat(700,150,1),VarCat(300,550,1),VarCat(700,550,2) };
+    Selector selector;
+    selector.sprite.setPosition(cats[0].sprite.getPosition());
 
     window.setKeyRepeatEnabled(false);
 
@@ -70,8 +120,7 @@ int main()
         sf::Event event;
         time = clock.getElapsedTime();
         DeltaTime = time.asSeconds();
-        var_sprite.setScale(sin(DeltaTime*4)*0.1 + 1, sin(DeltaTime*4) * 0.1 + 1);
-        while(window.pollEvent(event)) 
+        while (window.pollEvent(event))
         {
 
             switch (event.type)
@@ -80,21 +129,31 @@ int main()
                 window.close();
                 break;
             case sf::Event::KeyPressed:
-                switch (event.key.code) {
+                switch (event.key.code)
+                {
+                case sf::Keyboard::Right:
+                    if (selector.target < (sizeof(cats) / sizeof(cats[0]))-1) selector.target++;
+                    break;
+                case sf::Keyboard::Left:
+                    if(selector.target>0) selector.target--;
+                    break;
                 case sf::Keyboard::Return:
+                    cats[selector.target].OnUpdate();
                     break;
                 }
-            }
-            
-        }
-        window.draw(var_sprite);
 
-        for (int i = 0; i < 3;i++) {
+                selector.sprite.setPosition(cats[selector.target].sprite.getPosition());
+            }
+
+        }
+        selector.sprite.setScale(sin(DeltaTime * 4) * 0.1 + 1, sin(DeltaTime * 4) * 0.1 + 1);
+        for (int i = 0; i < sizeof(cats) / sizeof(cats[0]);i++)
+        {
             window.draw(cats[i].sprite);
         }
-        
+        window.draw(selector.sprite);
+
         window.display();
         window.clear();
     }
-    
 }
