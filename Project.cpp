@@ -23,7 +23,7 @@ public:
     sf::Sprite sprite;
 };
 
-//Class for background tiles
+//Classes for noninteractable objects
 class Background : public DrawableObject {
 public:
     Background() {
@@ -43,6 +43,19 @@ public:
         sprite.setTexture(texture);
         sprite.setPosition(pos_x, pos_y);
         sprite.setOrigin(0, 0);
+    }
+};
+
+class Transiotion : public DrawableObject {
+public:
+    Transiotion() {
+        texture_path = "resources/transition.png";
+        pos_x = SCREEN_WIDTH/2;
+        pos_y = SCREEN_HEIGHT/2;
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     }
 };
 
@@ -253,7 +266,7 @@ int main()
     sf::Clock clock;
     sf::Time time;
     float DeltaTime;
-
+    int transition_state = -1;
     
     //Arrays for drawable objects in level
     Background background[] = {Background(0,0),Background(256,0),Background(512,0),Background(768,0),Background(0,256),Background(256,256),Background(512,256),Background(768,256),Background(0,512),Background(256,512),Background(512,512),Background(768,512) };
@@ -261,6 +274,7 @@ int main()
     WhileCat while_cats[] = { WhileCat(256,384,0) };
     BoolCat bool_cats[] = { BoolCat(512,384,2) };
     Selector selector;
+    Transiotion transition;
     selector.sprite.setPosition(var_cats[0].sprite.getPosition().x + 128, var_cats[0].sprite.getPosition().y + 128);
 
     window.setKeyRepeatEnabled(false);
@@ -293,9 +307,9 @@ int main()
                     break;
                 //Updating targeted object with selector
                 case sf::Keyboard::Return:
+                    var_cats[selector.target].OnUpdate();
                     int state = var_cats[0].current_state;
                     bool winning_flag = true;
-                    var_cats[selector.target].OnUpdate();
                     system("cls");
                     for (int i = 0; i < sizeof(var_cats) / sizeof(var_cats[0]);i++)
                     {
@@ -316,10 +330,11 @@ int main()
                         if (bool_cats[i].current_state != state) winning_flag = false;
                         window.draw(bool_cats[i].sprite);
                         cout << bool_cats[i].current_state;
+                        cout <<endl<< DeltaTime;
                     }
-                    //Wincondition, when all cats share state
+                    //Win condition, when all cats share state
                     if (winning_flag) {
-                        window.close();
+                        transition_state = 1;
                     }
                     break;
                 }
@@ -350,7 +365,24 @@ int main()
         window.draw(selector.sprite);
 
 
+        switch (transition_state)
+        {
+        case 1:
+            transition.sprite.setScale(transition.sprite.getScale().x - 25 * DeltaTime, transition.sprite.getScale().y - 25 * DeltaTime);
+            if (transition.sprite.getScale().x <=1.5) transition_state = -1;
+            break;
+        case -1:
+            transition.sprite.setScale(transition.sprite.getScale().x + 25* DeltaTime, transition.sprite.getScale().y + 25 * DeltaTime);
+            if (transition.sprite.getScale().x >= 40) transition_state = 0;
+            break;
+        default:
+            break;
+        }
+        
+        window.draw(transition.sprite);
+
         //Rendering
+        clock.restart();
         window.display();
         window.clear();
     }
