@@ -219,9 +219,9 @@ int main()
     float DeltaTime;
 
 
-    VarCat var_cats[] = { VarCat(300,150,0),VarCat(700,150,1)};
-    WhileCat while_cats[] = { WhileCat(300,550,2) };
-    BoolCat bool_cats[] = { BoolCat(700,550,0) };
+    VarCat var_cats[] = { VarCat(150,150,0),VarCat(450,150,1),VarCat(750,150,2) };
+    WhileCat while_cats[] = { WhileCat(300,550,0) };
+    BoolCat bool_cats[] = { BoolCat(700,550,2) };
     Selector selector;
     selector.sprite.setPosition(var_cats[0].sprite.getPosition());
 
