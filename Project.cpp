@@ -13,7 +13,7 @@ const int SCREEN_WIDTH = 1024;
 
 //CLASSES
 
-//Main class for all objects that are drawn on screen
+//Main class for all objects that are drawn on screen, all other classes derive from this class
 class DrawableObject{
 public:
     const char* texture_path;
@@ -74,7 +74,7 @@ public:
     }
 };
 
-//Parent class for all cat objects, main building blocks for levels
+//Parent class for all cat objects, main building blocks for levels, all "cat" classes derive from this class
 class Cat : public DrawableObject {
 public:
     int number_of_states;
@@ -83,6 +83,7 @@ public:
     const char* texture_path_state_1;
     const char* texture_path_state_2;
     void OnUpdate();
+    
 };
 
 //Cat that changes when targetet by selector
@@ -257,6 +258,47 @@ public:
     }
 };
 
+//Cat with constant state that cannot be modified
+class ConstCat : public Cat {
+public:
+    ConstCat() {
+        number_of_states = 3;
+        current_state = 0;
+        texture_path_state_0 = "resources/constcat_0.png";
+        texture_path_state_1 = "resources/constcat_1.png";
+        texture_path_state_2 = "resources/constcat_2.png";
+        pos_x = 0;
+        pos_y = 0;
+        texture.loadFromFile(texture_path_state_0);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(0, 0);
+    }
+    ConstCat(int _pos_x, int _pos_y, int _state) {
+        number_of_states = 3;
+        current_state = _state;
+        texture_path_state_0 = "resources/constcat_0.png";
+        texture_path_state_1 = "resources/constcat_1.png";
+        texture_path_state_2 = "resources/constcat_2.png";
+        pos_x = _pos_x;
+        pos_y = _pos_y;
+        switch (current_state) {
+        case 0:
+            texture_path = texture_path_state_0;
+            break;
+        case 1:
+            texture_path = texture_path_state_1;
+            break;
+        case 2:
+            texture_path = texture_path_state_2;
+            break;
+        }
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(0, 0);
+    }
+};
 
 //Main function of the game
 int main()
@@ -265,18 +307,26 @@ int main()
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SynCats");
     sf::Clock clock;
     sf::Time time;
+    sf::Clock clock_sin;
+    sf::Time time_sin;
     float DeltaTime;
+    float sin_time;
     int transition_state = -1;
+    int level = 1;
     
     //Arrays for drawable objects in level
     Background background[] = {Background(0,0),Background(256,0),Background(512,0),Background(768,0),Background(0,256),Background(256,256),Background(512,256),Background(768,256),Background(0,512),Background(256,512),Background(512,512),Background(768,512) };
-    VarCat var_cats[] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
-    WhileCat while_cats[] = { WhileCat(256,384,0) };
-    BoolCat bool_cats[] = { BoolCat(512,384,2) };
+    VarCat var_cats[10] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
+    WhileCat while_cats[10] = { WhileCat(256,384,0) };
+    BoolCat bool_cats[10] = { BoolCat(512,384,2) };
     Selector selector;
     Transiotion transition;
-    selector.sprite.setPosition(var_cats[0].sprite.getPosition().x + 128, var_cats[0].sprite.getPosition().y + 128);
 
+    VarCat var_cats2[10] = { VarCat(256,128,0),VarCat(512,128,2) };
+    WhileCat while_cats2[10] = { WhileCat(384,384,1) };
+    BoolCat bool_cats2[10] = {};
+
+    selector.sprite.setPosition(var_cats[0].sprite.getPosition().x + 128, var_cats[0].sprite.getPosition().y + 128);
     window.setKeyRepeatEnabled(false);
 
     //GAME LOOP
@@ -285,6 +335,8 @@ int main()
         sf::Event event;
         time = clock.getElapsedTime();
         DeltaTime = time.asSeconds();
+        time_sin = clock_sin.getElapsedTime();
+        sin_time = time_sin.asSeconds();
         while (window.pollEvent(event))
         {
 
@@ -300,7 +352,7 @@ int main()
                 switch (event.key.code)
                 {
                 case sf::Keyboard::Right:
-                    if (selector.target < (sizeof(var_cats) / sizeof(var_cats[0]))-1) selector.target++;
+                    if (var_cats[selector.target + 1].pos_x != NULL) selector.target++;
                     break;
                 case sf::Keyboard::Left:
                     if(selector.target>0) selector.target--;
@@ -311,20 +363,20 @@ int main()
                     int state = var_cats[0].current_state;
                     bool winning_flag = true;
                     system("cls");
-                    for (int i = 0; i < sizeof(var_cats) / sizeof(var_cats[0]);i++)
+                    for (int i = 0; var_cats[i].pos_x!= NULL ;i++)
                     {
                         if (var_cats[i].current_state != state) winning_flag = false;
                         window.draw(var_cats[i].sprite);
                         cout << var_cats[i].current_state;
                     }
-                    for (int i = 0; i < sizeof(while_cats) / sizeof(while_cats[0]);i++)
+                    for (int i = 0; while_cats[i].pos_x != NULL;i++)
                     {
                         while_cats[i].OnUpdate();
                         if (while_cats[i].current_state != state) winning_flag = false;
                         window.draw(while_cats[i].sprite);
                         cout << while_cats[i].current_state;
                     }
-                    for (int i = 0; i < sizeof(bool_cats) / sizeof(bool_cats[0]);i++)
+                    for (int i = 0; bool_cats[i].pos_x != NULL;i++)
                     {
                         bool_cats[i].OnUpdate();
                         if (bool_cats[i].current_state != state) winning_flag = false;
@@ -349,27 +401,55 @@ int main()
             window.draw(background[i].sprite);
         }
 
-        for (int i = 0; i < sizeof(var_cats) / sizeof(var_cats[0]);i++)
+        for (int i = 0; var_cats[i].pos_x != NULL;i++)
         {
             window.draw(var_cats[i].sprite);
         }
-        for (int i = 0; i < sizeof(while_cats) / sizeof(while_cats[0]);i++)
+        for (int i = 0; while_cats[i].pos_x != NULL;i++)
         {
             window.draw(while_cats[i].sprite);
         }
-        for (int i = 0; i < sizeof(bool_cats) / sizeof(bool_cats[0]);i++)
+        for (int i = 0; bool_cats[i].pos_x != NULL;i++)
         {
             window.draw(bool_cats[i].sprite);
         }
-        selector.sprite.setScale(sin(DeltaTime * 4) * 0.1 + 1, sin(DeltaTime * 4) * 0.1 + 1);
+        selector.sprite.setScale(sin(sin_time * 4) * 0.1 + 1, sin(sin_time * 4) * 0.1 + 1);
         window.draw(selector.sprite);
 
-
+        //Level transition
         switch (transition_state)
         {
         case 1:
             transition.sprite.setScale(transition.sprite.getScale().x - 25 * DeltaTime, transition.sprite.getScale().y - 25 * DeltaTime);
-            if (transition.sprite.getScale().x <=1.5) transition_state = -1;
+            if (transition.sprite.getScale().x <= 1.5) 
+            {
+                transition_state = -1;
+                level++;
+                switch (level)
+                {
+                case 2:
+                    for (int i = 0; i<10;i++)
+                    {
+                        var_cats[i] = var_cats2[i];
+                    }
+                    for (int i = 0; i < 10;i++)
+                    {
+                        while_cats[i] = while_cats2[i];
+                    }
+                    for (int i = 0; i < 10;i++)
+                    {
+                        bool_cats[i] = bool_cats2[i];
+                    }
+                    break;
+                default:
+                    break;
+                }
+                
+
+                selector.target = 0;
+                selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x - 1208, var_cats[selector.target].sprite.getPosition().y - 1208);
+
+            }
             break;
         case -1:
             transition.sprite.setScale(transition.sprite.getScale().x + 25* DeltaTime, transition.sprite.getScale().y + 25 * DeltaTime);
