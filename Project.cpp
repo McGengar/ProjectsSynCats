@@ -319,12 +319,14 @@ int main()
     VarCat var_cats[10] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
     WhileCat while_cats[10] = { WhileCat(256,384,0) };
     BoolCat bool_cats[10] = { BoolCat(512,384,2) };
+    ConstCat const_cats[10] = {};
     Selector selector;
     Transiotion transition;
 
     VarCat var_cats2[10] = { VarCat(256,128,0),VarCat(512,128,2) };
-    WhileCat while_cats2[10] = { WhileCat(384,384,1) };
+    WhileCat while_cats2[10] = { WhileCat(256,384,1) };
     BoolCat bool_cats2[10] = {};
+    ConstCat const_cats2[10] = {ConstCat(512,384,1)};
 
     selector.sprite.setPosition(var_cats[0].sprite.getPosition().x + 128, var_cats[0].sprite.getPosition().y + 128);
     window.setKeyRepeatEnabled(false);
@@ -382,7 +384,12 @@ int main()
                         if (bool_cats[i].current_state != state) winning_flag = false;
                         window.draw(bool_cats[i].sprite);
                         cout << bool_cats[i].current_state;
-                        cout <<endl<< DeltaTime;
+                    }
+                    for (int i = 0; const_cats[i].pos_x != NULL;i++)
+                    {
+                        if (const_cats[i].current_state != state) winning_flag = false;
+                        window.draw(const_cats[i].sprite);
+                        cout << const_cats[i].current_state;
                     }
                     //Win condition, when all cats share state
                     if (winning_flag) {
@@ -413,6 +420,10 @@ int main()
         {
             window.draw(bool_cats[i].sprite);
         }
+        for (int i = 0; const_cats[i].pos_x != NULL;i++)
+        {
+            window.draw(const_cats[i].sprite);
+        }
         selector.sprite.setScale(sin(sin_time * 4) * 0.1 + 1, sin(sin_time * 4) * 0.1 + 1);
         window.draw(selector.sprite);
 
@@ -431,14 +442,9 @@ int main()
                     for (int i = 0; i<10;i++)
                     {
                         var_cats[i] = var_cats2[i];
-                    }
-                    for (int i = 0; i < 10;i++)
-                    {
                         while_cats[i] = while_cats2[i];
-                    }
-                    for (int i = 0; i < 10;i++)
-                    {
                         bool_cats[i] = bool_cats2[i];
+                        const_cats[i] = const_cats2[i];
                     }
                     break;
                 default:
