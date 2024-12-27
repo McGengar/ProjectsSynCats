@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "SFML/Graphics.hpp"
-#include <string>
 
 using namespace std;
 
@@ -353,34 +352,34 @@ int main()
 
     //All Levels described in arrays
 
-    VarCat var_cats1[10] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
-    WhileCat while_cats1[10] = { WhileCat(256,384,0) };
-    BoolCat bool_cats1[10] = { BoolCat(512,384,2) };
+    VarCat var_cats1[10] = {VarCat(256,256,0),VarCat(512,256,2)};
+    WhileCat while_cats1[10] = {};
+    BoolCat bool_cats1[10] = {};
     ConstCat const_cats1[10] = {};
 
     VarCat var_cats2[10] = { VarCat(256,128,0),VarCat(512,128,2) };
-    WhileCat while_cats2[10] = { WhileCat(256,384,1) };
+    WhileCat while_cats2[10] = {};
     BoolCat bool_cats2[10] = {};
-    ConstCat const_cats2[10] = {ConstCat(512,384,1)};
+    ConstCat const_cats2[10] = {ConstCat(384,384,1)};
 
-    VarCat var_cats3[10] = {};
-    WhileCat while_cats3[10] = {};
+    VarCat var_cats3[10] = { VarCat(256,128,0),VarCat(512,128,2) };
+    WhileCat while_cats3[10] = {WhileCat(384,384,1) };
     BoolCat bool_cats3[10] = {};
     ConstCat const_cats3[10] = {};
 
-    VarCat var_cats4[10] = {};
-    WhileCat while_cats4[10] = {};
-    BoolCat bool_cats4[10] = {};
-    ConstCat const_cats4[10] = {};
+    VarCat var_cats4[10] = { VarCat(384,128,2) };
+    WhileCat while_cats4[10] = {  };
+    BoolCat bool_cats4[10] = {BoolCat(384,384,0) };
+    ConstCat const_cats4[10] = {  };
 
-    VarCat var_cats5[10] = {};
-    WhileCat while_cats5[10] = {};
-    BoolCat bool_cats5[10] = {};
-    ConstCat const_cats5[10] = {};
+    VarCat var_cats5[10] = { VarCat(256,128,0),VarCat(512,128,2) };
+    WhileCat while_cats5[10] = { WhileCat(256,384,1) };
+    BoolCat bool_cats5[10] = {  };
+    ConstCat const_cats5[10] = { ConstCat(512,384,1) };
 
-    VarCat var_cats6[10] = {};
-    WhileCat while_cats6[10] = {};
-    BoolCat bool_cats6[10] = {};
+    VarCat var_cats6[10] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
+    WhileCat while_cats6[10] = { WhileCat(256,384,0) };
+    BoolCat bool_cats6[10] = { BoolCat(512,384,2) };
     ConstCat const_cats6[10] = {};
 
     VarCat var_cats7[10] = {};
