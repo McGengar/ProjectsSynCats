@@ -1,5 +1,5 @@
 ﻿//LIBRARIES
-
+//SynCats uses iostream for console debugging, and SFML as general media library
 #include <iostream>
 #include "SFML/Graphics.hpp"
 
@@ -13,6 +13,7 @@ const int SCREEN_WIDTH = 1024;
 //CLASSES
 
 //Main class for all objects that are drawn on screen, all other classes derive from this class
+//Each drawable object posses texture, which is later drawn as a sprite, and also position coordinats
 class DrawableObject{
 public:
     const char* texture_path;
@@ -100,6 +101,7 @@ public:
 };
 
 //Parent class for all cat objects, main building blocks for levels, all "cat" classes derive from this class
+//All cats have states, each with different texture and OnUpdate function, that describes what happens when that cat is updated
 class Cat : public DrawableObject {
 public:
     int number_of_states;
@@ -328,7 +330,7 @@ public:
 //Main function of the game
 int main()
 {
-    //Level Setup
+    //Level Setup, initializing window, clock/time objects to control animations, and other variables needed for levels
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "SynCats");
     sf::Clock clock;
     sf::Time time;
@@ -339,7 +341,7 @@ int main()
     int transition_state = -1;
     int level = 0;
     
-    //Arrays for drawable objects in level
+    //Arrays for drawable objects in level, each level can be described as set of these arrays
     Background background[] = {Background(0,0),Background(256,0),Background(512,0),Background(768,0),Background(0,256),Background(256,256),Background(512,256),Background(768,256),Background(0,512),Background(256,512),Background(512,512),Background(768,512) };
     VarCat var_cats[10] = {};
     WhileCat while_cats[10] = {};
@@ -350,7 +352,7 @@ int main()
     Title title;
     Start start;
 
-    //All Levels described in arrays
+    //All Levels described as arrays
 
     VarCat var_cats1[10] = {VarCat(256,256,0),VarCat(512,256,2)};
     WhileCat while_cats1[10] = {};
@@ -402,28 +404,41 @@ int main()
     BoolCat bool_cats10[10] = {};
     ConstCat const_cats10[10] = {};
 
+    //Selectors position is set outsude of window at first, so it isnt visible in the title screen
     selector.sprite.setPosition(-128, -128);
+    //This makes so you cannot hold a key to move to next object, you have to click each time
     window.setKeyRepeatEnabled(false);
 
     //GAME LOOP
+    //A game loop is a loop that from now on controls our game, each loop is one frame rendered
+    //All things that happen constantly, or in response to input must be contained here
     while (window.isOpen())
     {
+        //Initializing Event object that will operate all events that happen, but mostly input events
         sf::Event event;
+
+        //DeltaTime is a concept that describes how much time has passed since last frame
+        //We use it for animations and elements that we want to happen in certain time in real life
+        //For example, if we want object to move 100units to the right in 1 second, we need to
+        //add to this objects position 100 units multipled by DeltaTime, so it will take exactly 1 second
         time = clock.getElapsedTime();
         DeltaTime = time.asSeconds();
+        //sin_time is for situations simlar to DeltaTime, however this time doesnt reset at the end of loop
+        //so it can be used for continous situations, like sin function, hence the name
         time_sin = clock_sin.getElapsedTime();
         sin_time = time_sin.asSeconds();
+        //Loop that pools all events, but like mention earlier, mustly input events
         while (window.pollEvent(event))
         {
-
             //Handling Events
-
             switch (event.type)
             {
+            //Closing window when X button is pressed
             case sf::Event::Closed:
                 window.close();
                 break;
             //Handling Inputs
+            //Here we handle all key presses, like moving slector with keys and updating cats
             case sf::Event::KeyPressed:
                 switch (event.key.code)
                 {
@@ -475,13 +490,13 @@ int main()
                         break;
                     }
                 }
-                //Moving Selector
                 
             }
 
         }
         
         //Level transition
+        //Here is handled both animation of level transition, as well as loading next level
         switch (transition_state)
         {
         case 1:
@@ -586,7 +601,7 @@ int main()
                     break;
                 }
                 
-
+                //Each time selector returns to first VarCat, only selectable cat
                 selector.target = 0;
                 selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x + 128, var_cats[selector.target].sprite.getPosition().y + 128);
 
@@ -605,7 +620,7 @@ int main()
         {
             window.draw(background[i].sprite);
         }
-
+        //Drawing title and start message only at the start of the game
         if (level == 0) {
             start.sprite.setScale(sin(sin_time * 4) * 0.05 + 1, sin(sin_time * 4) * 0.05 + 1);
             window.draw(title.sprite);
@@ -628,12 +643,13 @@ int main()
         {
             window.draw(const_cats[i].sprite);
         }
+
         selector.sprite.setScale(sin(sin_time * 4) * 0.1 + 1, sin(sin_time * 4) * 0.1 + 1);
         window.draw(selector.sprite);
 
         window.draw(transition.sprite);
 
-        //Rendering
+        //Rendering and restarting clock for DeltaTime purposes
         clock.restart();
         window.display();
         window.clear();
