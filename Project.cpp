@@ -46,12 +46,38 @@ public:
     }
 };
 
-class Transiotion : public DrawableObject {
+class Transition : public DrawableObject {
 public:
-    Transiotion() {
+    Transition() {
         texture_path = "resources/transition.png";
         pos_x = SCREEN_WIDTH/2;
         pos_y = SCREEN_HEIGHT/2;
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    }
+};
+
+class Title : public DrawableObject {
+public:
+    Title() {
+        texture_path = "resources/title_screen.png";
+        pos_x = SCREEN_WIDTH / 2;
+        pos_y = SCREEN_HEIGHT / 2;
+        texture.loadFromFile(texture_path);
+        sprite.setTexture(texture);
+        sprite.setPosition(pos_x, pos_y);
+        sprite.setOrigin(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    }
+};
+
+class Start : public DrawableObject {
+public:
+    Start() {
+        texture_path = "resources/start.png";
+        pos_x = SCREEN_WIDTH / 2;
+        pos_y = SCREEN_HEIGHT / 2;
         texture.loadFromFile(texture_path);
         sprite.setTexture(texture);
         sprite.setPosition(pos_x, pos_y);
@@ -312,23 +338,72 @@ int main()
     float DeltaTime;
     float sin_time;
     int transition_state = -1;
-    int level = 1;
+    int level = 0;
     
     //Arrays for drawable objects in level
     Background background[] = {Background(0,0),Background(256,0),Background(512,0),Background(768,0),Background(0,256),Background(256,256),Background(512,256),Background(768,256),Background(0,512),Background(256,512),Background(512,512),Background(768,512) };
-    VarCat var_cats[10] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
-    WhileCat while_cats[10] = { WhileCat(256,384,0) };
-    BoolCat bool_cats[10] = { BoolCat(512,384,2) };
+    VarCat var_cats[10] = {};
+    WhileCat while_cats[10] = {};
+    BoolCat bool_cats[10] = {};
     ConstCat const_cats[10] = {};
     Selector selector;
-    Transiotion transition;
+    Transition transition;
+    Title title;
+    Start start;
+
+    //All Levels described in arrays
+
+    VarCat var_cats1[10] = { VarCat(128,128,0),VarCat(384,128,1),VarCat(640,128,2) };
+    WhileCat while_cats1[10] = { WhileCat(256,384,0) };
+    BoolCat bool_cats1[10] = { BoolCat(512,384,2) };
+    ConstCat const_cats1[10] = {};
 
     VarCat var_cats2[10] = { VarCat(256,128,0),VarCat(512,128,2) };
     WhileCat while_cats2[10] = { WhileCat(256,384,1) };
     BoolCat bool_cats2[10] = {};
     ConstCat const_cats2[10] = {ConstCat(512,384,1)};
 
-    selector.sprite.setPosition(var_cats[0].sprite.getPosition().x + 128, var_cats[0].sprite.getPosition().y + 128);
+    VarCat var_cats3[10] = {};
+    WhileCat while_cats3[10] = {};
+    BoolCat bool_cats3[10] = {};
+    ConstCat const_cats3[10] = {};
+
+    VarCat var_cats4[10] = {};
+    WhileCat while_cats4[10] = {};
+    BoolCat bool_cats4[10] = {};
+    ConstCat const_cats4[10] = {};
+
+    VarCat var_cats5[10] = {};
+    WhileCat while_cats5[10] = {};
+    BoolCat bool_cats5[10] = {};
+    ConstCat const_cats5[10] = {};
+
+    VarCat var_cats6[10] = {};
+    WhileCat while_cats6[10] = {};
+    BoolCat bool_cats6[10] = {};
+    ConstCat const_cats6[10] = {};
+
+    VarCat var_cats7[10] = {};
+    WhileCat while_cats7[10] = {};
+    BoolCat bool_cats7[10] = {};
+    ConstCat const_cats7[10] = {};
+
+    VarCat var_cats8[10] = {};
+    WhileCat while_cats8[10] = {};
+    BoolCat bool_cats8[10] = {};
+    ConstCat const_cats8[10] = {};
+
+    VarCat var_cats9[10] = {};
+    WhileCat while_cats9[10] = {};
+    BoolCat bool_cats9[10] = {};
+    ConstCat const_cats9[10] = {};
+
+    VarCat var_cats10[10] = {};
+    WhileCat while_cats10[10] = {};
+    BoolCat bool_cats10[10] = {};
+    ConstCat const_cats10[10] = {};
+
+    selector.sprite.setPosition(-128, -128);
     window.setKeyRepeatEnabled(false);
 
     //GAME LOOP
@@ -355,57 +430,187 @@ int main()
                 {
                 case sf::Keyboard::Right:
                     if (var_cats[selector.target + 1].pos_x != NULL) selector.target++;
+                    selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x + 128, var_cats[selector.target].sprite.getPosition().y + 128);
                     break;
                 case sf::Keyboard::Left:
                     if(selector.target>0) selector.target--;
+                    selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x + 128, var_cats[selector.target].sprite.getPosition().y + 128);
                     break;
                 //Updating targeted object with selector
                 case sf::Keyboard::Return:
-                    var_cats[selector.target].OnUpdate();
-                    int state = var_cats[0].current_state;
-                    bool winning_flag = true;
-                    system("cls");
-                    for (int i = 0; var_cats[i].pos_x!= NULL ;i++)
-                    {
-                        if (var_cats[i].current_state != state) winning_flag = false;
-                        window.draw(var_cats[i].sprite);
-                        cout << var_cats[i].current_state;
+                    if (transition_state == 0) {
+                        var_cats[selector.target].OnUpdate();
+                        int state = var_cats[0].current_state;
+                        bool winning_flag = true;
+                        system("cls");
+                        for (int i = 0; var_cats[i].pos_x != NULL;i++)
+                        {
+                            if (var_cats[i].current_state != state) winning_flag = false;
+                            window.draw(var_cats[i].sprite);
+                            cout << var_cats[i].current_state;
+                        }
+                        for (int i = 0; while_cats[i].pos_x != NULL;i++)
+                        {
+                            while_cats[i].OnUpdate();
+                            if (while_cats[i].current_state != state) winning_flag = false;
+                            window.draw(while_cats[i].sprite);
+                            cout << while_cats[i].current_state;
+                        }
+                        for (int i = 0; bool_cats[i].pos_x != NULL;i++)
+                        {
+                            bool_cats[i].OnUpdate();
+                            if (bool_cats[i].current_state != state) winning_flag = false;
+                            window.draw(bool_cats[i].sprite);
+                            cout << bool_cats[i].current_state;
+                        }
+                        for (int i = 0; const_cats[i].pos_x != NULL;i++)
+                        {
+                            if (const_cats[i].current_state != state) winning_flag = false;
+                            window.draw(const_cats[i].sprite);
+                            cout << const_cats[i].current_state;
+                        }
+                        //Win condition, when all cats share state
+                        if (winning_flag) {
+                            transition_state = 1;
+                        }
+                        break;
                     }
-                    for (int i = 0; while_cats[i].pos_x != NULL;i++)
-                    {
-                        while_cats[i].OnUpdate();
-                        if (while_cats[i].current_state != state) winning_flag = false;
-                        window.draw(while_cats[i].sprite);
-                        cout << while_cats[i].current_state;
-                    }
-                    for (int i = 0; bool_cats[i].pos_x != NULL;i++)
-                    {
-                        bool_cats[i].OnUpdate();
-                        if (bool_cats[i].current_state != state) winning_flag = false;
-                        window.draw(bool_cats[i].sprite);
-                        cout << bool_cats[i].current_state;
-                    }
-                    for (int i = 0; const_cats[i].pos_x != NULL;i++)
-                    {
-                        if (const_cats[i].current_state != state) winning_flag = false;
-                        window.draw(const_cats[i].sprite);
-                        cout << const_cats[i].current_state;
-                    }
-                    //Win condition, when all cats share state
-                    if (winning_flag) {
-                        transition_state = 1;
-                    }
-                    break;
                 }
                 //Moving Selector
-                selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x+128, var_cats[selector.target].sprite.getPosition().y+128);
+                
             }
 
         }
+        
+        //Level transition
+        switch (transition_state)
+        {
+        case 1:
+            transition.sprite.setScale(transition.sprite.getScale().x - 25 * DeltaTime, transition.sprite.getScale().y - 25 * DeltaTime);
+            if (transition.sprite.getScale().x <= 1.5) 
+            {
+                transition_state = -1;
+                level++;
+                switch (level)
+                {
+                case 1:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats1[i];
+                        while_cats[i] = while_cats1[i];
+                        bool_cats[i] = bool_cats1[i];
+                        const_cats[i] = const_cats1[i];
+                    }
+                    break;
+                case 2:
+                    for (int i = 0; i<10;i++)
+                    {
+                        var_cats[i] = var_cats2[i];
+                        while_cats[i] = while_cats2[i];
+                        bool_cats[i] = bool_cats2[i];
+                        const_cats[i] = const_cats2[i];
+                    }
+                    break;
+                case 3:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats3[i];
+                        while_cats[i] = while_cats3[i];
+                        bool_cats[i] = bool_cats3[i];
+                        const_cats[i] = const_cats3[i];
+                    }
+                    break;
+                case 4:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats4[i];
+                        while_cats[i] = while_cats4[i];
+                        bool_cats[i] = bool_cats4[i];
+                        const_cats[i] = const_cats4[i];
+                    }
+                    break;
+                case 5:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats5[i];
+                        while_cats[i] = while_cats5[i];
+                        bool_cats[i] = bool_cats5[i];
+                        const_cats[i] = const_cats5[i];
+                    }
+                    break;
+                case 6:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats6[i];
+                        while_cats[i] = while_cats6[i];
+                        bool_cats[i] = bool_cats6[i];
+                        const_cats[i] = const_cats6[i];
+                    }
+                    break;
+                case 7:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats7[i];
+                        while_cats[i] = while_cats7[i];
+                        bool_cats[i] = bool_cats7[i];
+                        const_cats[i] = const_cats7[i];
+                    }
+                    break;
+                case 8:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats8[i];
+                        while_cats[i] = while_cats8[i];
+                        bool_cats[i] = bool_cats8[i];
+                        const_cats[i] = const_cats8[i];
+                    }
+                    break;
+                case 9:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats9[i];
+                        while_cats[i] = while_cats9[i];
+                        bool_cats[i] = bool_cats9[i];
+                        const_cats[i] = const_cats9[i];
+                    }
+                    break;
+                case 10:
+                    for (int i = 0; i < 10;i++)
+                    {
+                        var_cats[i] = var_cats10[i];
+                        while_cats[i] = while_cats10[i];
+                        bool_cats[i] = bool_cats10[i];
+                        const_cats[i] = const_cats10[i];
+                    }
+                    break;
+                default:
+                    break;
+                }
+                
+
+                selector.target = 0;
+                selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x + 128, var_cats[selector.target].sprite.getPosition().y + 128);
+
+            }
+            break;
+        case -1:
+            transition.sprite.setScale(transition.sprite.getScale().x + 25* DeltaTime, transition.sprite.getScale().y + 25 * DeltaTime);
+            if (transition.sprite.getScale().x >= 40) transition_state = 0;
+            break;
+        default:
+            break;
+        }
+
         //Drawing all objects, starting from background to front
         for (int i = 0; i < sizeof(background) / sizeof(background[0]);i++)
         {
             window.draw(background[i].sprite);
+        }
+
+        if (level == 0) {
+            start.sprite.setScale(sin(sin_time * 4) * 0.05 + 1, sin(sin_time * 4) * 0.05 + 1);
+            window.draw(title.sprite);
+            window.draw(start.sprite);
         }
 
         for (int i = 0; var_cats[i].pos_x != NULL;i++)
@@ -427,44 +632,6 @@ int main()
         selector.sprite.setScale(sin(sin_time * 4) * 0.1 + 1, sin(sin_time * 4) * 0.1 + 1);
         window.draw(selector.sprite);
 
-        //Level transition
-        switch (transition_state)
-        {
-        case 1:
-            transition.sprite.setScale(transition.sprite.getScale().x - 25 * DeltaTime, transition.sprite.getScale().y - 25 * DeltaTime);
-            if (transition.sprite.getScale().x <= 1.5) 
-            {
-                transition_state = -1;
-                level++;
-                switch (level)
-                {
-                case 2:
-                    for (int i = 0; i<10;i++)
-                    {
-                        var_cats[i] = var_cats2[i];
-                        while_cats[i] = while_cats2[i];
-                        bool_cats[i] = bool_cats2[i];
-                        const_cats[i] = const_cats2[i];
-                    }
-                    break;
-                default:
-                    break;
-                }
-                
-
-                selector.target = 0;
-                selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x - 1208, var_cats[selector.target].sprite.getPosition().y - 1208);
-
-            }
-            break;
-        case -1:
-            transition.sprite.setScale(transition.sprite.getScale().x + 25* DeltaTime, transition.sprite.getScale().y + 25 * DeltaTime);
-            if (transition.sprite.getScale().x >= 40) transition_state = 0;
-            break;
-        default:
-            break;
-        }
-        
         window.draw(transition.sprite);
 
         //Rendering
