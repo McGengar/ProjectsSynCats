@@ -1,4 +1,15 @@
-﻿//LIBRARIES
+﻿//Made by Marcin Węgrzyn
+
+//SynCat is a logical puzzle game about synchronizing cats.
+//The game consists of many levels, each containg sets of cats, 
+//and each cat is an object with 2 or 3 states
+//You can tell the state of the cat from how many eyes of theirs are open
+//There are many cats with different quirks, each specific to that one cat. 
+//For the most part, you can only impact one cat at the time, 
+//but others will follow, so you have to be careful becouse changing state of one cat
+//can drastically change state of all cats.
+
+//LIBRARIES
 //SynCats uses iostream for console debugging, and SFML as general media library
 #include <iostream>
 #include "SFML/Graphics.hpp"
@@ -411,10 +422,10 @@ int main()
     BoolCat bool_cats6[10] = { BoolCat(512,384,2) };
     ConstCat const_cats6[10] = {};
 
-    VarCat var_cats7[10] = { VarCat(128,256,0) };
+    VarCat var_cats7[10] = {  };
     WhileCat while_cats7[10] = {};
-    BoolCat bool_cats7[10] = { BoolCat(640,256,0) };
-    ConstCat const_cats7[10] = { ConstCat(384,256,1) };
+    BoolCat bool_cats7[10] = {  };
+    ConstCat const_cats7[10] = {  };
 
 
     //Selectors position is set outsude of window at first, so it isnt visible in the title screen
@@ -580,6 +591,7 @@ int main()
                     }
                     break;
                 case 7:
+                    //After level 6, game goes back to the menu
                     for (int i = 0; i < 10;i++)
                     {
                         var_cats[i] = var_cats7[i];
@@ -587,14 +599,19 @@ int main()
                         bool_cats[i] = bool_cats7[i];
                         const_cats[i] = const_cats7[i];
                     }
+                    
+                    selector.sprite.setPosition(-128, -128);
+                    level = 0;
+
                     break;
                 default:
                     break;
                 }
                 
                 //Each time selector returns to first VarCat, only selectable cat
+                
                 selector.target = 0;
-                selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x + 128, var_cats[selector.target].sprite.getPosition().y + 128);
+                if (level > 0)selector.sprite.setPosition(var_cats[selector.target].sprite.getPosition().x + 128, var_cats[selector.target].sprite.getPosition().y + 128);
 
             }
             break;
