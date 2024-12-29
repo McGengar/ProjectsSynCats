@@ -2,6 +2,7 @@
 //SynCats uses iostream for console debugging, and SFML as general media library
 #include <iostream>
 #include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
 
 using namespace std;
 
@@ -340,6 +341,32 @@ int main()
     float sin_time;
     int transition_state = -1;
     int level = 0;
+
+    //Setup for all sounds used in the game
+    sf::SoundBuffer theme_buffer;
+    sf::Sound theme;
+    sf::SoundBuffer meow_buffer;
+    sf::Sound meow;
+    sf::SoundBuffer selector_buffer;
+    sf::Sound selector_sound;
+
+    theme_buffer.loadFromFile("resources/syncats_theme.wav");
+    theme.setBuffer(theme_buffer);
+    theme.setLoop(true);
+    theme.setVolume(2);
+    theme.play();
+
+    meow_buffer.loadFromFile("resources/moew_sound_effect.wav");
+    meow.setBuffer(meow_buffer);
+    meow.setLoop(false);
+    meow.setVolume(10);
+
+    selector_buffer.loadFromFile("resources/selector_sound_effect.wav");
+    selector_sound.setBuffer(selector_buffer);
+    selector_sound.setLoop(false);
+    selector_sound.setVolume(10);
+    
+    
     
     //Arrays for drawable objects in level, each level can be described as set of these arrays
     Background background[] = {Background(0,0),Background(256,0),Background(512,0),Background(768,0),Background(0,256),Background(256,256),Background(512,256),Background(768,256),Background(0,512),Background(256,512),Background(512,512),Background(768,512) };
@@ -384,25 +411,11 @@ int main()
     BoolCat bool_cats6[10] = { BoolCat(512,384,2) };
     ConstCat const_cats6[10] = {};
 
-    VarCat var_cats7[10] = {};
+    VarCat var_cats7[10] = { VarCat(128,256,0) };
     WhileCat while_cats7[10] = {};
-    BoolCat bool_cats7[10] = {};
-    ConstCat const_cats7[10] = {};
+    BoolCat bool_cats7[10] = { BoolCat(640,256,0) };
+    ConstCat const_cats7[10] = { ConstCat(384,256,1) };
 
-    VarCat var_cats8[10] = {};
-    WhileCat while_cats8[10] = {};
-    BoolCat bool_cats8[10] = {};
-    ConstCat const_cats8[10] = {};
-
-    VarCat var_cats9[10] = {};
-    WhileCat while_cats9[10] = {};
-    BoolCat bool_cats9[10] = {};
-    ConstCat const_cats9[10] = {};
-
-    VarCat var_cats10[10] = {};
-    WhileCat while_cats10[10] = {};
-    BoolCat bool_cats10[10] = {};
-    ConstCat const_cats10[10] = {};
 
     //Selectors position is set outsude of window at first, so it isnt visible in the title screen
     selector.sprite.setPosition(-128, -128);
@@ -453,6 +466,7 @@ int main()
                 //Updating targeted object with selector
                 case sf::Keyboard::Return:
                     if (transition_state == 0) {
+                        
                         var_cats[selector.target].OnUpdate();
                         int state = var_cats[0].current_state;
                         bool winning_flag = true;
@@ -486,6 +500,10 @@ int main()
                         //Win condition, when all cats share state
                         if (winning_flag) {
                             transition_state = 1;
+                            meow.play();
+                        }
+                        else {
+                            selector_sound.play();
                         }
                         break;
                     }
@@ -568,33 +586,6 @@ int main()
                         while_cats[i] = while_cats7[i];
                         bool_cats[i] = bool_cats7[i];
                         const_cats[i] = const_cats7[i];
-                    }
-                    break;
-                case 8:
-                    for (int i = 0; i < 10;i++)
-                    {
-                        var_cats[i] = var_cats8[i];
-                        while_cats[i] = while_cats8[i];
-                        bool_cats[i] = bool_cats8[i];
-                        const_cats[i] = const_cats8[i];
-                    }
-                    break;
-                case 9:
-                    for (int i = 0; i < 10;i++)
-                    {
-                        var_cats[i] = var_cats9[i];
-                        while_cats[i] = while_cats9[i];
-                        bool_cats[i] = bool_cats9[i];
-                        const_cats[i] = const_cats9[i];
-                    }
-                    break;
-                case 10:
-                    for (int i = 0; i < 10;i++)
-                    {
-                        var_cats[i] = var_cats10[i];
-                        while_cats[i] = while_cats10[i];
-                        bool_cats[i] = bool_cats10[i];
-                        const_cats[i] = const_cats10[i];
                     }
                     break;
                 default:
